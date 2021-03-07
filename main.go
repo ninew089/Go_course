@@ -1,6 +1,7 @@
 package main
 
 import (
+	"course-go/config"
 	"course-go/routes"
 	"log"
 	"os"
@@ -14,6 +15,8 @@ func main(){
 	if err!= nil{
 		log.Fatal("Failed to load .env file")
 	}
+	config.InitDB()
+	defer config.CloseDB()
 	r := gin.Default()
 	r.Static("/upload","./upload")
 	uploadDirs :=[...]string{"articles","users"}

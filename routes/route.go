@@ -1,9 +1,10 @@
 package routes
+
 import (
 	"net/http"
-	"github.com/gin-gonic/gin"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 )
 
 // GET/api/v1/article
@@ -13,10 +14,15 @@ import (
 // DELETE/api/v1/article/:id
 
 type article struct {
-	ID uint
-	Title string
-	Body string
+	ID uint `json:"id" `
+	Title string `json:"title"`
+	Body string	`json:"body"`
 }
+//binding:"required" คือ การกำหนดให้ใส่เข้ามาทุกครั้ง
+type createArticle struct {
+	Title string `json:"title" binding:"required"`
+	Body string `json:"body" binding:"required"`
+	}
 func Serve(r *gin.Engine){
 	articles := []article{
 		{ID:1, Title:"Title1",Body:"Body1"},
@@ -45,4 +51,20 @@ func Serve(r *gin.Engine){
 		}
 		ctx.JSON(http.StatusNotFound,gin.H{	"error":" Article Not found"})
 	})
+	//func(ctx *gin.Context)  รับข้อมูล
+	articleGroup.POST("",func(ctx *gin.Context){
+	var form createArticle
+	if err:=ctx.ShouldBindJSON(&form); err!= nil{
+		ctx.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
+		return 
+	}
+
+	a := article{
+		ID:    uint(len(articles) + 1),
+		Title: form.Title,
+		Body:  form.Body,
+	}
+	articles = append(articles, a)
+	ctx.JSON(http.StatusCreated, gin.H{"article": a})
+})
 }

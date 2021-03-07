@@ -82,7 +82,7 @@ func Serve(r *gin.Engine){
 	if err :=ctx.SaveUploadedFile(file,filename);err != nil{
 	//...//
 	}
-	a.Image = "http://127.0.0.1:8080/"+filename
+	a.Image = os.Getenv("HOST")+"/"+filename
 
 	//Attach File to Article
 	articles = append(articles, a)

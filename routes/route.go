@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"mime/multipart"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -17,11 +19,14 @@ type article struct {
 	ID uint `json:"id" `
 	Title string `json:"title"`
 	Body string	`json:"body"`
+	Image string	`json:"image"`
+
 }
 //binding:"required" คือ การกำหนดให้ใส่เข้ามาทุกครั้ง
 type createArticle struct {
-	Title string `json:"title" binding:"required"`
-	Body string `json:"body" binding:"required"`
+	Title string `form:"title" binding:"required"`
+	Body string `form:"body" binding:"required"`
+	Image *multipart.FileHeader `form:"image" binding:"required"`
 	}
 func Serve(r *gin.Engine){
 	articles := []article{
@@ -54,7 +59,7 @@ func Serve(r *gin.Engine){
 	//func(ctx *gin.Context)  รับข้อมูล
 	articleGroup.POST("",func(ctx *gin.Context){
 	var form createArticle
-	if err:=ctx.ShouldBindJSON(&form); err!= nil{
+	if err:=ctx.ShouldBind(&form); err!= nil{
 		ctx.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
 		return 
 	}
@@ -64,6 +69,22 @@ func Serve(r *gin.Engine){
 		Title: form.Title,
 		Body:  form.Body,
 	}
+	//Get file
+	file,_ := ctx.FormFile("image")
+
+	//Create Path
+	//ID=> 8,upload/articles/8/image.png
+	path := "upload/articles/"+strconv.Itoa(int(a.ID))
+	os.MkdirAll(path,0755)
+
+	//Upload file
+	filename := path +"/" + file.Filename // เอาชื่อของไฟล์
+	if err :=ctx.SaveUploadedFile(file,filename);err != nil{
+	//...//
+	}
+	a.Image = "http://127.0.0.1:8080/"+filename
+
+	//Attach File to Article
 	articles = append(articles, a)
 	ctx.JSON(http.StatusCreated, gin.H{"article": a})
 })

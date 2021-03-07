@@ -9,6 +9,7 @@ import (
 
 func main(){
 	r := gin.Default()
+	r.Static("/upload","./upload")
 	uploadDirs :=[...]string{"articles","users"}
 	for _,dir := range uploadDirs{
 		os.MkdirAll("upload"+dir,0755)

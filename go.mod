@@ -12,5 +12,6 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.3.0
 	github.com/pelletier/go-toml v1.8.1 // indirect
-	golang.org/x/sys v0.0.0-20210228012217-479acdf4ea46 // indirect
+	golang.org/x/sys v0.0.0-20210305230114-8fe3ee5dd75b // indirect
+	gopkg.in/gormigrate.v1 v1.6.0
 )

@@ -23,6 +23,13 @@ type createArticleForm struct {
 	Excerpt string                `form:"excerpt" binding:"required"`
 	Image   *multipart.FileHeader `form:"image" binding:"required"`
 }
+type updateArticleForm struct {
+	Title   string                `form:"title"`
+	Body    string                `form:"body"`
+	Excerpt string                `form:"excerpt"`
+	Image   *multipart.FileHeader `form:"image"`
+}
+
 
 type articleResponse struct {
 	ID      uint   `json:"id"`
@@ -59,6 +66,41 @@ func (a *Articles) FindAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"articles": serializedArticles})
 }
 */
+func (a *Articles) Delete(ctx *gin.Context) {
+	article, err := a.findArticleByID(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	a.DB.Unscoped().Delete(&article)
+	ctx.Status(http.StatusNoContent)
+}
+func (a *Articles) Update(ctx *gin.Context) {
+	var form updateArticleForm
+	if err := ctx.ShouldBind(&form); err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+
+	article, err := a.findArticleByID(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := a.DB.Model(&article).Update(&form).Error; err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error})
+		return
+	}
+
+	a.setArticleImage(ctx, article)
+
+	var serializedArticle articleResponse
+	copier.Copy(&serializedArticle, article)
+	ctx.JSON(http.StatusOK, gin.H{"article": serializedArticle})
+}
+
 func (a *Articles) FindOne(ctx *gin.Context) {
 	article, err := a.findArticleByID(ctx)
 	if err != nil {
@@ -128,3 +170,4 @@ func (a *Articles) findArticleByID(ctx *gin.Context) (*models.Article, error) {
 
 	return &article, nil
 }
+

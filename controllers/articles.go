@@ -44,15 +44,12 @@ type articlesPaging struct {
 	Paging *pagingResult     `json:"paging"`
 }
 
+
 func (a *Articles) FindAll(ctx *gin.Context) {
 	var articles []models.Article
 
-	// /articles => limit => 12, page => 1
-	// /articles?limit=10 => limit => 10, page => 1
-	// /articles?page=10 => limit => 12, page => 10
-	// /articles?page=2&limit=4 => limit => 4, page => 2
-	//a.DB.Order("id desc") เรียงโดย id
-	paging := pagingResource(ctx, a.DB.Order("id desc"), &articles)
+	pagination := pagination{ctx: ctx, query: a.DB.Order("id desc"), records: &articles}
+	paging := pagination.paginate()
 
 	var serializedArticles []articleResponse
 	copier.Copy(&serializedArticles, &articles)

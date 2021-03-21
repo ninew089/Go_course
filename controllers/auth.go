@@ -81,3 +81,4 @@ func (a *Auth) UpdateProfile(ctx *gin.Context) {
 	copier.Copy(&serializedUser, user)
 	ctx.JSON(http.StatusOK, gin.H{"user": serializedUser})
 }
+

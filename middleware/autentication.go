@@ -15,7 +15,7 @@ type login struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8"`
 }
-	//บงชี้ว่าไหนเป้น ของ sub
+
 var identityKey = "sub"
 
 func Authenticate() *jwt.GinJWTMiddleware {
@@ -23,8 +23,23 @@ func Authenticate() *jwt.GinJWTMiddleware {
 		// secret key
 		Key: []byte(os.Getenv("SECRET_KEY")),
 
-		//บงชี้ว่าไหนเป้น ของ sub
 		IdentityKey: identityKey,
+		//ดูดจาก header
+		TokenLookup:   "header: Authorization",
+		TokenHeadName: "Bearer",
+
+		IdentityHandler: func(c *gin.Context) interface{} {
+			var user models.User
+			claims := jwt.ExtractClaims(c)
+			id := claims[identityKey]
+
+			db := config.GetDB()
+			if db.First(&user, uint(id.(float64))).RecordNotFound() {
+				return nil
+			}
+
+			return &user
+		},
 
 		// login => user
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -49,7 +64,6 @@ func Authenticate() *jwt.GinJWTMiddleware {
 
 		// user => payload(sub) => JWT
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			//เช็คว่าไส้ในใช่ตัวmodel User ไหม
 			if v, ok := data.(*models.User); ok {
 				claims := jwt.MapClaims{
 					identityKey: v.ID,

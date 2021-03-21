@@ -17,6 +17,7 @@ func Migrate() {
 			m1596889997CreateCategoriesTable(),
 			m1596954993AddCategoryIDToArticles(),
 			m1596977447CreateUsersTable(),
+			m1597000245AddUserIDToArticles(),
 		},
 	)
 

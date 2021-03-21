@@ -21,7 +21,7 @@ func main() {
 	config.InitDB()
 	defer config.CloseDB()
 	migrations.Migrate()
- seed.Load()
+ //seed.Load()
 
 	r := gin.Default()
 	r.Static("/uploads", "./uploads")

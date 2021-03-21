@@ -194,4 +194,3 @@ func (a *Articles) findArticleByID(ctx *gin.Context) (*models.Article, error) {
 
 	return &article, nil
 }
-

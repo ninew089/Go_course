@@ -22,7 +22,7 @@ func Load() {
 	log.Info("Creating admin...")
 
 	admin := models.User{
-		Email:    "admin@babelcoder.com",
+		Email:    "ninew.jck@gmail.com",
 		Password: "passw0rd",
 		Name:     "Admin",
 		Role:     "Admin",

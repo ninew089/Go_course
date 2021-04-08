@@ -95,18 +95,29 @@ Pagination
 
 
 Authen
- Hook
+
+Hook
 https://gorm.io/docs/hooks.html
 BeforeSave() ไม่นิยมใช้เเล้ว
 
 Authentication
 https://github.com/appleboy/gin-jwt
 Cabin
+
 Policy.csv
+
 p, Admin, /api/v1/users, (GET)|(POST)
+
 p, Admin, /api/v1/users/*, (GET)|(PATCH)|(DELETE)
+
 p, Admin, /api/v1/categories, (POST)
+
+
 p, Admin, /api/v1/categories/*, (PATCH)|(DELETE)
+
+
 p, (Admin)|(Editor), /api/v1/articles, (POST)
+
+
 p, (Admin)|(Editor), /api/v1/articles/*, (PATCH)|(DELETE)
 
